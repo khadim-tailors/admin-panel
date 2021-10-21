@@ -7,7 +7,7 @@ const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 function VerticalBar() {
     const [options, setOptions] = useState(null);
     useEffect(() => {
-        axios.get('http://localhost:5001/khadim-tailors/us-central1/dashboards/getUsersBasedOnPlans').then(res=>{
+        axios.get('https://us-central1-khadim-tailors.cloudfunctions.net/dashboards/getUsersBasedOnPlans').then(res=>{
             if(res.status){
                 setOptions({
                     title: {

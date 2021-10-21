@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
+import ButtonHeader from '../../common/ButtonHeader'
+import CreateShop from './CreateShop'
+import StaticShopsList from './StaticShopsList'
 
 function StaticShops() {
+
+    const [createMode, setCreateMode] = useState(false);
+    const createClicked = () => setCreateMode(!createMode)
+
     return <div className="mainContent-container">
-        Static Shops
+        <ButtonHeader onCreateClick={createClicked} onBackClick={createClicked} showBack={createMode}/>
+        { createMode ? <CreateShop /> : <StaticShopsList /> }
     </div>
 }
 
