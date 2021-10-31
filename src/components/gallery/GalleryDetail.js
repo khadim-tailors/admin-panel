@@ -1,11 +1,11 @@
 import React from 'react'
+import { useParams } from 'react-router'
 
 function GalleryDetail() {
     return <div className="galleryDetailContainer">
         <div className="__header d-flex justify-content-between align-items-center mb-4">
             <h4 className="text-uppercase">Men's Suit</h4>
             <button className="btn btn-primary">Add New <i className="fas fa-plus ml-3"></i></button>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam a nemo eius eum voluptatum consectetur, repudiandae ipsa, provident debitis hic possimus libero ex rerum veniam rem, delectus suscipit dolore deserunt. Recusandae iste quidem eligendi voluptas corrupti! Dignissimos in deleniti, iure animi rerum dolores, possimus quisquam explicabo maiores aliquam libero soluta!
         </div>
         <div className="__images">
             <div className="__img">

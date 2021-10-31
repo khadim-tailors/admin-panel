@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link, useParams } from 'react-router-dom'
 
 const galleryItems = [
     {
@@ -49,15 +50,18 @@ function GalleryList() {
             {
                 galleryItems.map(item => {
                     return  <div className="col-4 col-lg-3">
-                        <div className="galleryCard">
-                            <div className="__image">
-                                <img src={item.thumbImage} alt="" />
+                        {/* <Link to={`gallery/${productId}`}> */}
+                        <Link to={item.name.toLowerCase()}>
+                            <div className="galleryCard">
+                                <div className="__image">
+                                    <img src={item.thumbImage} alt="" />
+                                </div>
+                                <div className="__heading">
+                                    <h5>{item.name}</h5>
+                                    <h5>({item.totallImages})</h5>
+                                </div>
                             </div>
-                            <div className="__heading">
-                                <h5>{item.name}</h5>
-                                <h5>({item.totallImages})</h5>
-                            </div>
-                        </div>
+                        </Link>
                     </div>
                 })
             }

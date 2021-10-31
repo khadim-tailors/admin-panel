@@ -1,7 +1,10 @@
 import React from 'react'
-import { Route } from 'react-router';
+import { Redirect, Route } from 'react-router';
 import Dashboard from '../dashboard/Dashboard';
 import Gallery from '../gallery/Gallery';
+import GalleryDetail from '../gallery/GalleryDetail';
+import GalleryList from '../gallery/GalleryList';
+import Login from '../login/Login';
 import Measurements from '../measurements/Measurements';
 import PageHeader from '../PageHeader';
 import Plans from '../plans/Plans';
@@ -12,31 +15,34 @@ import Users from '../users/Users';
 function Main() {
     return (
         <main className="mainBar">
-            <Route path="/dashboard">
-                <PageHeader heading={'Dashboard'} />
-                <Dashboard />
+            <Route exact path="/">
+                <Login/>
             </Route>
-            <Route path="/services">
+            <Route exact path="/dashboard">
+                <PageHeader heading={'Dashboard'} />
+                <Dashboard /> 
+            </Route>
+            <Route exact path="/services">
                 <PageHeader heading={'Services'} />
                 <Services />
             </Route>
-            <Route path="/static-shops">
+            <Route exact path="/static-shops">
                 <PageHeader heading={'Static Shops'} />
                 <StaticShops />
             </Route>
-            <Route path="/gallery">
+            <Route exact path="/gallery">
                 <PageHeader heading={'Gallery'} />
                 <Gallery />
             </Route>
-            <Route path="/measurements">
+            <Route exact path="/measurements">
                 <PageHeader heading={'Measurements'} />
                 <Measurements />
             </Route>
-            <Route path="/plans">
+            <Route exact path="/plans">
                 <PageHeader heading={'Plans'} />
                 <Plans />
             </Route>
-            <Route path="/my-users">
+            <Route exact path="/my-users">
                 <PageHeader heading={'My Users'} />
                 <Users />
             </Route>

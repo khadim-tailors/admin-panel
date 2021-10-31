@@ -1,0 +1,5 @@
+export const actionTypes = {
+    ADD_SHOP:"ADD_SHOP",
+    SET_ALL_SHOPS:"SET_ALL_SHOPS",
+    DEACTIVATE_SHOP:"DEACTIVATE_SHOP",
+}

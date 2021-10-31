@@ -1,12 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
 import Loader from '../../common/Loader';
-import AlertPopup from '../../common/AlertPopup';
 import Swal from "sweetalert2";
+import { Alert } from '../../common/alerts';
+// import CreateShop from './CreateShop';
+import EditShop from './EditShop';
 
 function StaticShopsList() {
     const [shops, setShops] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);
+    const [editMode, setEditMode] = useState(false);
 
     const toggaleShop = (shop_id) =>{
         const shopIndex = shops.findIndex(shop=> shop.shop_id ===  shop_id)
@@ -15,6 +18,10 @@ function StaticShopsList() {
             tempShops[shopIndex].status = !tempShops[shopIndex].status;
             setShops(JSON.parse(JSON.stringify(tempShops)))
         } 
+    }
+
+    const handleEdit = (shop) =>{
+        setEditMode(shop)
     }
     useEffect(() => {
         axios.get("https://us-central1-khadim-tailors.cloudfunctions.net/shops/fetchShops").then( res => {
@@ -40,9 +47,9 @@ function StaticShopsList() {
                 .then(response => {
                     if(response.data.status) {
                         toggaleShop(shop.shop_id);
-                       return Swal.fire('Saved!', '', 'success')
+                        return Alert('Saved!', 'success')
                     }
-                   return Swal.fire('Something went wrong', '', 'error')
+                   return Alert('Something went wrong', 'error')
                 }).catch((err) => {
                     return Swal.fire(err.message, '', 'error')
                 })
@@ -53,8 +60,9 @@ function StaticShopsList() {
     return <div className="staticShopsList">
         { 
             loaderActive ? <Loader /> :
-            <table class="table table-striped table-bordered" style={{verticalAlign: "middle"}}>
-                <thead class="table-dark borderless">
+            editMode ? <EditShop shopDetail={editMode}/> :
+            <table className="table table-striped table-bordered" style={{verticalAlign: "middle"}}>
+                <thead className="table-dark borderless">
                     <tr>
                         <th>Name</th>
                         <th>Phone Number</th>
@@ -62,6 +70,7 @@ function StaticShopsList() {
                         <th>Timings</th>
                         <th>Working Days</th>
                         <th>Location</th>
+                        <th>Map</th>
                         <th>Edit</th>
                         <th>Action</th>
                     </tr>
@@ -77,14 +86,19 @@ function StaticShopsList() {
                             <td>Sun, Mon, Tue, Wed, Thu, Fri, Sat</td>
                             <td>{shop.address}, {shop.city}, {shop.zip} {shop.state}</td>
                             <td>
-                                <div className="editButton w-100 d-flex justify-content-center">
-                                    <i className="fas fa-edit"></i>
+                                <div className="editButton cursor-pointer w-100 d-flex justify-content-center">
+                                    <i className="fas fa-map-marked-alt fz-18"></i>
                                 </div>
                             </td>
                             <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" onChange={(e) => checkActive(shop)} type="checkbox" checked={shop.status} role="switch" id={shop.shop_id} />
-                                    <label class="form-check-label" for={shop.shop_id}>{shop.status ? 'Active': 'Inactive'}</label>
+                                <div className="editButton cursor-pointer w-100 d-flex justify-content-center" onClick={(e)=>handleEdit(shop)}>
+                                    <i className="fas fa-edit fz-18"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div className="form-check form-switch">
+                                    <input className="form-check-input" onChange={(e) => checkActive(shop)} type="checkbox" checked={shop.status} role="switch" id={shop.shop_id} />
+                                    <label className="form-check-label" htmlFor={shop.shop_id}>{shop.status ? 'Active': 'Inactive'}</label>
                                 </div>
                             </td>
                         </tr>
@@ -93,8 +107,6 @@ function StaticShopsList() {
                 </tbody>
             </table>
         }
-        {/* <AlertPopup/> */}
-       
     </div>
 }
 
