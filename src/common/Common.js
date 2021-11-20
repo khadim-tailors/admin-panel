@@ -3,27 +3,13 @@ import {storage} from '../firebase'
 export async function imageUpload(file, path) {
     console.log(file)
     if((file.size/1024) > 1024) return Alert("Image size cannot be more than 1MB", "error");
-    debugger
     if(!file.type.includes("image")) return Alert("Only Images can be uploaded", "error");
-    try{
+    try {
         if (file === "") return
-        const uploadTask = storage
-          .ref(`/${path}/${file.name}`)
-          .put(file);
-        await uploadTask.on(
-          "state_changed",
-          (snapShot) => {
-            //takes a snap shot of the process as it is happening
-            console.log(snapShot);
-          },
-          (err) => {
-            //catches the errors
-            console.log(err);
-          });
-       const imageUrl = await storage.ref(path).child(file.name).getDownloadURL()
-       console.log(imageUrl)
-       return imageUrl;
-    }catch(e){
+        const uploadTask = await storage.ref(`/${path}/${file.name}`).put(file);
+        const url =  await uploadTask.ref.getDownloadURL();
+        return url
+      } catch(e) {
         console.log(e)
     }
 }

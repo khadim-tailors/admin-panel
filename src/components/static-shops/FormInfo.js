@@ -10,6 +10,7 @@ const FormInfo = (FormValidation, selectedDays) => {
         closeAt: '',
         address: '',
         city: '',
+        image:null,
         state: '',
         zip: '',
         map: '',
@@ -24,8 +25,12 @@ const FormInfo = (FormValidation, selectedDays) => {
         setValues({ ...values, [name]: value });
     }
 
-    const handleSubmit = e => {
-        e.preventDefault();
+    const handleFileChange = e =>{
+        const {target} = e;
+        setValues({ ...values, [target.name]:target.files[0]})
+    }
+
+    const handleSubmit = () => {
         const validationUpdate = FormValidation(values);
         setErrors(validationUpdate);
         const workingDays = selectedDays.some(day => day.status === true)
@@ -33,43 +38,12 @@ const FormInfo = (FormValidation, selectedDays) => {
         
         if(Object.keys(validationUpdate).length !== 0) return Alert('Please, Fill valid details', 'error');
         if(!workingDays) return Alert('Please, Select Working Days', 'error');
-        const formData = {
-            shopName: values.shopName,
-            phone: values.phone,
-            email: values.email,
-            openAt: values.openAt,
-            closeAt: values.closeAt,
-            address: values.address,
-            city: values.city,
-            state: values.state,
-            zip: values.zip,
-            map: values.map,
-            website: values.website,
-            facebook: values.facebook,
-            instagram: values.instagram,
-        }
-
-        console.table(formData);
-        setValues({ 
-            shopName: '', 
-            phone: '', 
-            email: '', 
-            openAt: '', 
-            closeAt: '', 
-            address: '', 
-            city: '', 
-            state: '', 
-            zip: '', 
-            map: '', 
-            website: '', 
-            facebook: '', 
-            instagram: '',
-        });
+        return values
     }
 
     
 
-    return {handleChange, values, handleSubmit, errors}
+    return {handleChange, values, handleSubmit, errors, handleFileChange}
 }
 
 export default FormInfo;

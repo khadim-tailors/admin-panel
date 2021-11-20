@@ -1,47 +1,57 @@
-import React from 'react'
-import { useParams } from 'react-router'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router';
+import ButtonHeader from '../../common/ButtonHeader';
+import Loader from '../../common/Loader';
+import AddImage from './AddImage';
 
 function GalleryDetail() {
-    return <div className="galleryDetailContainer">
-        <div className="__header d-flex justify-content-between align-items-center mb-4">
-            <h4 className="text-uppercase">Men's Suit</h4>
-            <button className="btn btn-primary">Add New <i className="fas fa-plus ml-3"></i></button>
-        </div>
+    const [galleryImages, setGalleryImages] = useState(null);
+    const {folderName} = useParams();
+    const [createMode, setCreateMode] =  useState(false)
+    useEffect(() => {
+        axios.get(`http://localhost:5001/khadim-tailors/us-central1/gallery/folder/${folderName}`).then(response=>{
+        if(response.data.status){
+            setGalleryImages(response.data.result);
+        }else{
+            console.log("Wrong response received from the api", response.data.message)
+        }
+        }).catch(err=>{
+            console.log(err)
+        })
+    },[]);
+
+    const handleCreateMode = () => setCreateMode(!createMode)
+    const deleteImage = (id) =>{
+        axios.post("http://localhost:5001/khadim-tailors/us-central1/gallery/deleteImage", {id, folderName}).then(response=>{
+            console.log(response.data.message)
+            console.log(response.data.result)
+        })
+    }
+
+    return (<>
+        {
+            createMode ? <AddImage /> : 
+            <div className="galleryDetailContainer">
+            <ButtonHeader link="/gallery" handleCreateMode={handleCreateMode}/>
+            <h4 className="text-uppercase">{folderName}</h4>
         <div className="__images">
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1491336477066-31156b5e4f35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1611937663641-5cef5189d71b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1594938328870-9623159c8c99?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
-            <div className="__img">
-                <div className="__deleteIcon"><i className="fas fa-trash-alt"></i></div>
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
-            </div>
+            {
+               galleryImages ?  galleryImages.images.map((img,index)=> {
+                   return ( 
+                   <div className="__img">
+                        <div className="__deleteIcon" onClick={()=>deleteImage(img.id)}><i className="fas fa-trash-alt"></i></div>
+                        <img src={img.url} alt="" />
+                   </div>)
+               }) : <Loader/>
+            }            
         </div>
     </div>
+        }
+        </>)
+    
+    
+    
 }
 
 export default GalleryDetail

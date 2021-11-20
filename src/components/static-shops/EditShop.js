@@ -1,57 +1,29 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
-import { days } from '../../common/utils';
-import {Alert} from 'react-bootstrap'
-import {storage} from "../../firebase"
+import { bucketFolderNames, days } from '../../common/utils';
+import {Alert} from '../../common/alerts'
+import { imageUpload } from '../../common/Common';
+import { useHistory, useParams } from 'react-router';
+import ButtonHeader from '../../common/ButtonHeader';
 
-function EditShop({shopDetail}) {
-    console.log(shopDetail)
-    const allInputs = {imgUrl: ''}
+function EditShop() {
+    const [shopDetail, setShopDetail] = useState(null);
+    const {shop_id} =  useParams()
+    const history = useHistory()
     const [imageAsFile, setImageAsFile] = useState('')
-    const [imageAsUrl, setImageAsUrl] = useState(allInputs);   
-
-    useEffect(() => {
-        try{
-            if (imageAsFile === "") return
-            const uploadTask = storage
-              .ref(`/images/${imageAsFile.name}`)
-              .put(imageAsFile);
-            uploadTask.on(
-              "state_changed",
-              (snapShot) => {
-                //takes a snap shot of the process as it is happening
-                console.log(snapShot);
-              },
-              (err) => {
-                //catches the errors
-                console.log(err);
-              },
-              () => {
-                // gets the functions from storage refences the image storage in firebase by the children
-                // gets the download url then sets the image from firebase as the value for the imgUrl key:
-                storage
-                  .ref("images")
-                  .child(imageAsFile.name)
-                  .getDownloadURL()
-                  .then((fireBaseUrl) => {
-                      console.log("fireBaseUrl",fireBaseUrl);
-                    setImageAsUrl((prevObject) => ({
-                      ...prevObject,
-                      imgUrl: fireBaseUrl,
-                    }));
-                  });
-              }
-            );
-            console.log(uploadTask)
-        }catch(e){
-            console.log(e)
-        }
-        
-    }, [imageAsFile])
     const handleImageAsFile = async (e) => {
         const image = e.target.files[0]
         setImageAsFile(imageFile => (image))
     }
+    useEffect(()=>{
+      axios.post("http://localhost:5001/khadim-tailors/us-central1/shops/getShopById", {shop_id}).then((response)=>{
+        if(response.data.status) {
+          setShopDetail(response.data.result)
+        }       
+    }).catch((error)=>{
+        console.log(error);
+    })
+    },[])
 
     const shopName = useRef(null);
     const phone = useRef(null);
@@ -67,12 +39,14 @@ function EditShop({shopDetail}) {
     const facebook = useRef(null);
     const instagram = useRef(null);
     const mapLocation = useRef(null);
-    const [variant, setVariant] = useState(null)
 
-
-    const handleShopSave = (event)=>{
-        event.preventDefault();
+    const handleShopSave = async (id)=> {
+      let {image} = shopDetail;
+      if(imageAsFile) {
+        image =  await imageUpload(imageAsFile, bucketFolderNames.SHOPS)
+      }
         const form = {
+            shop_id:id,
             shopName: shopName.current.value,
             phone: phone.current.value,
             email: email.current.value,
@@ -80,6 +54,7 @@ function EditShop({shopDetail}) {
             closeAt: closeAt.current.value,
             daysOpen: daysOpen.current.value,
             address: address.current.value,
+            image,
             city: city.current.value,
             state: state.current.value,
             zip: zip.current.value,
@@ -87,47 +62,49 @@ function EditShop({shopDetail}) {
             facebook: facebook.current.value,
             instagram: instagram.current.value,
         };
-        if(imageAsUrl.imgUrl){
-            form.avatarUrl = imageAsUrl.imgUrl;
-            axios.post("http://localhost:5001/khadim-tailors/us-central1/shops/addShop", form).then((response)=>{
-                if(response.data.status) setVariant("success") 
-                else setVariant("error")
+        console.log(form)
+            axios.post("http://localhost:5001/khadim-tailors/us-central1/shops/updateShop", form).then((response)=>{
+                let type = "error"
+                if(response.data.status) {
+                  type = "success";
+                  history.push('/shops')
+                }
+                return Alert(response.data.message,type)
+               
             }).catch((error)=>{
-                setVariant("error")
+              console.log(error)
             })
-        }
         // setShopDetails(form)
        
         
     }
 
     return (
+      <>
+      <ButtonHeader link="/shops" hideAddNew={true}/>
       <div className="formContainer">
-        { variant ? <Alert key="1" variant={variant}>
-        {variant === "success" ?  "Shop added successfully.": "Failed to save shop."} 
-        </Alert> :''}
-        <div className="formSubContainer" id={shopDetail.shop_id}>
-          <h5 className="_heading"><i className="fas fa-pencil-alt"></i> Edit: Shop Details</h5>
+        <div className="formSubContainer" id={shopDetail?.shop_id}>
+          <h5 className="_heading"><i className="fas fa-pencil-alt"></i> Edit Shop Details</h5>
           <form className="row g-3">
             <div className="col-md-6">
-              <label htmlFor="inputEmail4" className="form-label"> Shop Name </label>
-              <input type="text" ref={shopName} className="form-control" placeholder="eg. Khadim Tailors" defaultValue={shopDetail.shopName} />
+              <label htmlFor="inputEmail4" className="form-label">Shop Name </label>
+              <input type="text" ref={shopName} className="form-control" placeholder="eg. Khadim Tailors" defaultValue={shopDetail?.shopName} />
             </div>
             <div className="col-md-6">
               <label htmlFor="inputPassword4" className="form-label"> Phone Number </label>
-              <input type="text" ref={phone} className="form-control" placeholder="eg. 7838367864" defaultValue={shopDetail.phone} />
+              <input type="text" ref={phone} className="form-control" placeholder="eg. 7838367864" defaultValue={shopDetail?.phone} />
             </div>
             <div className="col-6">
               <label htmlFor="inputAddress" className="form-label"> Email ID </label>
-              <input type="email" ref={email} className="form-control" placeholder="example@gmail.com" defaultValue={shopDetail.email} />
+              <input type="email" ref={email} className="form-control" placeholder="example@gmail.com" defaultValue={shopDetail?.email} />
             </div>
             <div className="col-md-3">
               <label htmlFor="inputEmail4" className="form-label"> Open At </label>
-              <input type="time" ref={openAt} className="form-control" placeholder="00:00" defaultValue={shopDetail.openAt} />
+              <input type="time" ref={openAt} className="form-control" placeholder="00:00" defaultValue={shopDetail?.openAt} />
             </div>
             <div className="col-md-3">
-              <label htmlFor="inputEmail4" className="form-label"> Close At </label>
-              <input type="time" ref={closeAt} className="form-control" placeholder="00:00" defaultValue={shopDetail.closeAt} />
+              <label htmlFor="inputEmail4" className="form-label">Close At </label>
+              <input type="time" ref={closeAt} className="form-control" placeholder="00:00" defaultValue={shopDetail?.closeAt} />
             </div>
             <div className="col-12">
               <div className="d-flex justify-content-between">
@@ -141,7 +118,7 @@ function EditShop({shopDetail}) {
             </div>
             <div className="col-2">
                 <div className="profileAvatar">
-                    <img src={shopDetail.avatarUrl} alt={shopDetail.shopName} />
+                    <img src={shopDetail?.image} alt={shopDetail?.shopName} />
                 </div>
             </div>
             <div className="col-10">
@@ -150,19 +127,19 @@ function EditShop({shopDetail}) {
             </div>
             <div className="col-12">
               <label htmlFor="inputAddress2" className="form-label"> Address 2 </label>
-              <input type="text" ref={address} className="form-control" placeholder="Apartment, studio, or floor" defaultValue={shopDetail.address} />
+              <input type="text" ref={address} className="form-control" placeholder="Apartment, studio, or floor" defaultValue={shopDetail?.address} />
             </div>
             <div className="col-md-5">
               <label htmlFor="inputCity" className="form-label"> City </label>
-              <input type="text" ref={city} className="form-control" placeholder="eg. Delhi" defaultValue={shopDetail.city} />
+              <input type="text" ref={city} className="form-control" placeholder="eg. Delhi" defaultValue={shopDetail?.city} />
             </div>
             <div className="col-md-4">
               <label htmlFor="inputState" className="form-label"> State </label>
-              <input type="text" ref={state} className="form-control" placeholder="eg. Delhi" defaultValue={shopDetail.state} />
+              <input type="text" ref={state} className="form-control" placeholder="eg. Delhi" defaultValue={shopDetail?.state} />
             </div>
             <div className="col-md-3">
               <label htmlFor="inputZip" className="form-label"> Zip </label>
-              <input type="text" ref={zip} className="form-control" placeholder="eg. xxxxxx" defaultValue={shopDetail.zip} />
+              <input type="text" ref={zip} className="form-control" placeholder="eg. xxxxxx" defaultValue={shopDetail?.zip} />
             </div>
             <div className="col-12">
               <label htmlFor="inputZip" className="form-label"> Pick your location from map </label>
@@ -173,25 +150,26 @@ function EditShop({shopDetail}) {
               <h6 className="text-uppercase">Social Media Details</h6>
               <div className="col-12 mb-2">
                 <label htmlFor="inputZip" className="form-label"> Website </label>
-                <input type="url" ref={website} className="form-control" placeholder="eg. https://khadimtailors.com" defaultValue={shopDetail.website} />
+                <input type="url" ref={website} className="form-control" placeholder="eg. https://khadimtailors.com" defaultValue={shopDetail?.website} />
               </div>
               <div className="col-12 mb-2">
                 <label htmlFor="inputZip" className="form-label"> Facebook </label>
-                <input type="url" ref={facebook} className="form-control" placeholder="eg. https://facebook.com/khadimtailors" defaultValue={shopDetail.facebook} />
+                <input type="url" ref={facebook} className="form-control" placeholder="eg. https://facebook.com/khadimtailors" defaultValue={shopDetail?.facebook} />
               </div>
               <div className="col-12 mb-2">
                 <label htmlFor="inputZip" className="form-label"> Instagram </label>
-                <input type="url" ref={instagram} className="form-control" placeholder="eg. https://instagram.com/khadimtailors" defaultValue={shopDetail.instagram} />
+                <input type="url" ref={instagram} className="form-control" placeholder="eg. https://instagram.com/khadimtailors" defaultValue={shopDetail?.instagram} />
               </div>
             </div>
             <div className="col-12 d-flex justify-content-center">
-              <button type="type" className="btn btn-primary w-100 btn-lg text-uppercase" onClick={(event) => handleShopSave(event)}>
+              <button type="button" className="btn btn-primary w-100 btn-lg text-uppercase" onClick={() => handleShopSave(shopDetail?.shop_id)}>
                 Save
               </button>
             </div>
           </form>
         </div>
       </div>
+      </>
     );
 }
 

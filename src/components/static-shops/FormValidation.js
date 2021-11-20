@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 const FormValidation = (values) => {
     let errors = {};
 
@@ -27,7 +25,7 @@ const FormValidation = (values) => {
     if(!values.zip) errors.zip = "Zip Code Required";
 
     if(!values.map) errors.map = "Map Link Required";
-
+    
     return errors;
 
 }

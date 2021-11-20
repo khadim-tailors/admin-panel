@@ -5,11 +5,13 @@ import Swal from "sweetalert2";
 import { Alert } from '../../common/alerts';
 // import CreateShop from './CreateShop';
 import EditShop from './EditShop';
+import { Link } from 'react-router-dom';
 
 function StaticShopsList() {
     const [shops, setShops] = useState([]);
     const [loaderActive, setLoaderActive] = useState(true);
     const [editMode, setEditMode] = useState(false);
+    const [shopOnEditMode, setShopOnEditMode] = useState(null)
 
     const toggaleShop = (shop_id) =>{
         const shopIndex = shops.findIndex(shop=> shop.shop_id ===  shop_id)
@@ -21,8 +23,12 @@ function StaticShopsList() {
     }
 
     const handleEdit = (shop) =>{
-        setEditMode(shop)
+        setShopOnEditMode(shop)
+        handleEditShops();
     }
+
+    const handleEditShops = () => setEditMode(!editMode)
+
     useEffect(() => {
         axios.get("https://us-central1-khadim-tailors.cloudfunctions.net/shops/fetchShops").then( res => {
             setLoaderActive(false)
@@ -60,7 +66,6 @@ function StaticShopsList() {
     return <div className="staticShopsList">
         { 
             loaderActive ? <Loader /> :
-            editMode ? <EditShop shopDetail={editMode}/> :
             <table className="table table-striped table-bordered" style={{verticalAlign: "middle"}}>
                 <thead className="table-dark borderless">
                     <tr>
@@ -91,9 +96,9 @@ function StaticShopsList() {
                                 </div>
                             </td>
                             <td>
-                                <div className="editButton cursor-pointer w-100 d-flex justify-content-center" onClick={(e)=>handleEdit(shop)}>
+                                <Link className="editButton cursor-pointer w-100 d-flex justify-content-center" to={"/shops/edit-shop/"+shop.shop_id}>
                                     <i className="fas fa-edit fz-18"></i>
-                                </div>
+                                </Link>
                             </td>
                             <td>
                                 <div className="form-check form-switch">

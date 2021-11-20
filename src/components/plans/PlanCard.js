@@ -8,7 +8,6 @@ function PlanCard({planDetail}) {
                 <h5><span>Price:</span> {planDetail.currency} {planDetail.price}</h5>
                 <p className="card-text">Orders : {planDetail.total_order_count}</p>
                 <p className="card-text">Validity : {planDetail.expire_in_months}Month</p>
-                <p className="card-text">Price :</p>
                 <ul className="_options">
                     <li>Order Management <i className="fas fa-check ml-2"></i></li>
                     <li>Customer Management <i className="fas fa-check ml-2"></i></li>

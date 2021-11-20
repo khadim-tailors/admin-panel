@@ -24,7 +24,7 @@ function Aside() {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/static-shops" activeClassName='active'>
+                    <NavLink to="/shops" activeClassName='active'>
                         <i className="fas fa-store"></i>
                         Static Shops
                     </NavLink>
@@ -38,7 +38,13 @@ function Aside() {
                 <li>
                     <NavLink to="/measurements" activeClassName='active'>
                         <i className="fas fa-ruler-combined"></i>
-                        Measurements Icons
+                        Measurements
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/measurement-icons" activeClassName='active'>
+                        <i className="fas fa-users"></i>
+                        Measurement Icons
                     </NavLink>
                 </li>
                 <li>
@@ -48,7 +54,7 @@ function Aside() {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/my-users" activeClassName='active'>
+                    <NavLink to="/users" activeClassName='active'>
                         <i className="fas fa-users"></i>
                         My Users
                     </NavLink>

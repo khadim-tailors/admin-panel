@@ -32,3 +32,8 @@ export const days = [
         checked: false
     }
 ]
+
+export const bucketFolderNames = {
+    "SHOPS":'shops',
+    "GALLERY": 'gallery'
+}
