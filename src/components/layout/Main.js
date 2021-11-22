@@ -15,6 +15,7 @@ import CreateShop from "../static-shops/CreateShop";
 import MeasurementIcon from "../measurementIcon/MeasurementIcon";
 import NewMeasurement from "../measurements/NewMeasurement";
 import NewService from "../services/NewService";
+import NewPlan from "../plans/NewPlan";
 
 function Main() {
   return (
@@ -70,6 +71,10 @@ function Main() {
       <Route exact path="/plans">
         <PageHeader heading={"Plans"} />
         <Plans />
+      </Route>
+      <Route exact path="/plans/add-plan">
+        <PageHeader heading={"Plans"} />
+        <NewPlan />
       </Route>
       <Route exact path="/users">
         <PageHeader heading={"My Users"} />

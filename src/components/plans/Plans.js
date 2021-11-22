@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react';
 
-import axios from 'axios'
+import axios from 'axios';
 import PlanCard from './PlanCard';
 import Loader from '../../common/Loader';
 import NewPlan from './NewPlan';
@@ -8,21 +8,21 @@ import NewPlan from './NewPlan';
 function Plans() {
     const [isLoading, setIsLoading] = useState(false);
     const [loaderActive, setLoaderActive] = useState(true);
-    const [plans, setPlans] = useState([])
+    const [plans, setPlans] = useState([]);
     useEffect(() => {
-        setIsLoading(true)
-        axios.get("https://us-central1-khadim-tailors.cloudfunctions.net/plans/fetchPlans").then(response=>{
+        setIsLoading(true);
+        axios.get("https://us-central1-khadim-tailors.cloudfunctions.net/plans/fetchPlans").then(response => {
             const data = response.data;
-            if(data.status){
+            if (data.status) {
                 setLoaderActive(false);
-                setPlans(data.result)
-                console.log(data.result)
+                setPlans(data.result);
+                console.log(data.result);
             }
-        }).catch(err=>{
+        }).catch(err => {
             setLoaderActive(false);
             setIsLoading(false);
-        })
-    }, [])
+        });
+    }, []);
 
     return (
         <>
@@ -30,9 +30,9 @@ function Plans() {
                 <div className="row g-4">
                     {
                         loaderActive ? <Loader /> :
-                        plans.map( plan => {
-                            return <PlanCard planDetail={plan} key={plan.name} />;
-                        })
+                            plans.map(plan => {
+                                return <PlanCard planDetail={plan} key={plan.name} />;
+                            })
                     }
                 </div>
                 {/* <div className="d-flex justify-content-between">
@@ -54,12 +54,8 @@ function Plans() {
                     }
                 </div> */}
             </div>
-            <br />
-            <br />
-            <br />
-            <NewPlan />
         </>
-    )
+    );
 }
 
-export default Plans
+export default Plans;
